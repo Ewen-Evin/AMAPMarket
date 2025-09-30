@@ -49,7 +49,7 @@ Ce profil permet de naviguer dans le menu de gestion sans impacter les données 
 
 ## Contact
 
-Pour toute question ou suggestion, contactez-nous à : **amap'market@amap.com**
+Pour toute question ou suggestion, contactez-nous à : **contact@ewenevin.fr**
 
 ---
 
