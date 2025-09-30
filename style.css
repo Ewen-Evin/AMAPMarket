@@ -1,0 +1,128 @@
+body {
+  background-color: #e6ddca;
+  display: flex;
+  flex-direction: column;
+  padding-top: 100px;
+}
+
+.bar {
+  background-color: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1030;
+  margin-bottom: auto;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.nav-link.actif {
+  font-weight: bold;
+}
+
+.logo {
+  width: 8%;
+  height: auto;
+  margin-bottom: 5px;
+}
+
+.logo-co{
+  width: 20%;
+  height: auto;
+}
+
+a {
+  text-decoration: none;
+}
+
+h1 {
+  color: #288b00;
+}
+
+.panel {
+  border-radius: 0.3rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.image {
+  width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.text-overlay {
+  position: absolute;
+  top: 50%; /* Centre verticalement */
+  left: 50%; /* Centre horizontalement */
+  transform: translate(-50%, -50%); /* Ajuste la position pour centrer précisément */
+  color: white;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  border-radius: 5px;
+  z-index: 2;
+  opacity: 0; 
+  transition: opacity 0.3s ease;
+  pointer-events: none; /* Évite que la souris interagisse avec cet élément */
+}
+
+.panel:hover .text-overlay {
+  opacity: 1;
+}
+
+.panel:hover .image {
+  transform: scale(1.05); /* Zoom sur l'image */
+}
+
+.panel.panel-green {
+  border: 1px solid #1d7e00;
+  background-color: #86cc5d;
+  color: #ffffff;
+}
+
+.panel.panel-white {
+  font-size: 1rem;
+  background-color: #ffffff;
+  color: #288b00;
+  border-radius: 25px;
+  z-index: 1;
+}
+
+.btn-green {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 5rem;
+  cursor: pointer;
+}
+
+.btn-green:hover {
+  background-color: #218838;
+}
+
+
+footer {
+  background-color: #343a40;
+  color: white;
+  padding: 1rem 0;
+  text-align: center;
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+html, body {
+  height: 100%;
+}
+
+
+/* {
+  outline: 1px solid red !important;
+}
