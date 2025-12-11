@@ -124,7 +124,7 @@ try {
                     <?php
                     $products = ['Carotte', 'Tomate', 'Poivronrouge', 'Courgette'];
                     foreach ($products as $product) {
-                        echo '<img src="image/' . htmlspecialchars($product) . '.webp" alt="' . ucfirst($product) . '">';
+                        echo '<img src="image/' . strtolower($product) . '.webp" alt="' . ucfirst($product) . '">';
                     }
                     ?>
                 </div>

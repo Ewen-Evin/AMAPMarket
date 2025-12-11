@@ -99,16 +99,16 @@ $connexion->query("SET CHARACTER SET utf8");
   } else {
     while ($lignes = $reponse->fetch(PDO::FETCH_ASSOC)){
       echo '<div class="col-12 col-sm-6 col-md-4 panel">
-          <img class="image" src="image/'. $lignes["nom_produit"].$lignes["variete_produit"].'.webp" alt="'. $lignes["nom_produit"]. " ".$lignes["variete_produit"].'">
-          <div class="text-overlay">'. $lignes["nom_produit"] .'
-          <br>
-          '.$lignes["variete_produit"].' </div>
-          <div class="panel panel-white">
-             '. $lignes["prix_produit"] .'€/Kg
-             <br><br>
-             <button class="btn-green panier" data-product="'. $lignes["nom_produit"].'"data-variety="'.$lignes["variete_produit"] .'" data-price="'. $lignes["prix_produit"] .'">Ajouter au panier</button>
-          </div>
-        </div>';
+        <img class="image" src="image/'. strtolower($lignes["nom_produit"]).strtolower($lignes["variete_produit"]).'.webp" alt="'. $lignes["nom_produit"]. " ".$lignes["variete_produit"].'">
+        <div class="text-overlay">'. $lignes["nom_produit"] .'
+        <br>
+        '.$lignes["variete_produit"].' </div>
+        <div class="panel panel-white">
+          '. $lignes["prix_produit"] .'€/Kg
+          <br><br>
+          <button class="btn-green panier" data-product="'. $lignes["nom_produit"].'"data-variety="'.$lignes["variete_produit"] .'" data-price="'. $lignes["prix_produit"] .'">Ajouter au panier</button>
+        </div>
+      </div>';
     }
   }
 ?>
