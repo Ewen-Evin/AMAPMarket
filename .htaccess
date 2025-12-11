@@ -12,7 +12,7 @@ ErrorDocument 404 /404.php
     Deny from all
 </FilesMatch>
 
-# Protéger le dossier config
+# Protéger le dossier config (version corrigée)
 <Directory "/home/ewenevh/config">
     Order Allow,Deny
     Deny from all
@@ -22,7 +22,7 @@ ErrorDocument 404 /404.php
 <Files "db_config.php">
     Order Allow,Deny
     Deny from all
-</FilesMatch>
+</Files>
 
 # Forcer l'utilisation de HTTPS (si ton hébergement le supporte)
 # RewriteEngine On
