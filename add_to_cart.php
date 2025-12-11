@@ -1,5 +1,6 @@
 <?php
-$config = require '/home/ewenevh/config/db_config.php';
+session_start(); // AJOUT CRITIQUE
+$config = require './config/db_config.php';
 
 try {
     $dsn = "mysql:host={$config['db_host']};dbname={$config['db_name']};charset=utf8mb4";
@@ -17,16 +18,22 @@ try {
 
 $data = json_decode(file_get_contents('php://input'), true);
 
+// Vérifier que l'utilisateur est connecté
+if (!isset($_SESSION['id_client'])) {
+    echo json_encode(['success' => false, 'message' => "Vous devez être connecté."]);
+    exit;
+}
+
 // Vérifier que les données nécessaires sont présentes
-if (isset($data['product']) && isset($data['price']) && isset($data['variety']) && isset($data['clientId'])) {
+if (isset($data['product']) && isset($data['price']) && isset($data['variety'])) {
     $product = $data['product'];
     $price = $data['price'];
     $variety = $data['variety'];
     $quantity = 1; // Quantité par défaut
-    $clientId = $data['clientId']; // ID client
+    $clientId = $_SESSION['id_client']; // ID client depuis la session
 
     // Vérifier si le produit est déjà dans le panier de l'utilisateur
-    $sql = "SELECT * FROM panier WHERE nom_panier = :product AND variete_panier = :variety AND id_client = :clientId AND statut_panier = 'en_cours'";
+    $sql = "SELECT * FROM {$config['db_prefix']}panier WHERE nom_panier = :product AND variete_panier = :variety AND id_client = :clientId AND statut_panier = 'en_cours'";
     $stmt = $connexion->prepare($sql);
     $stmt->bindParam(':product', $product);
     $stmt->bindParam(':variety', $variety);
@@ -39,7 +46,7 @@ if (isset($data['product']) && isset($data['price']) && isset($data['variety']) 
         // Si le produit existe déjà, on augmente la quantité
         $newQuantity = $existingProduct['quantite_panier'] + 1;
 
-        $updateSql = "UPDATE panier SET quantite_panier = :quantity WHERE id_panier = :id";
+        $updateSql = "UPDATE {$config['db_prefix']}panier SET quantite_panier = :quantity WHERE id_panier = :id";
         $updateStmt = $connexion->prepare($updateSql);
         $updateStmt->bindParam(':quantity', $newQuantity);
         $updateStmt->bindParam(':id', $existingProduct['id_panier']);
@@ -51,7 +58,7 @@ if (isset($data['product']) && isset($data['price']) && isset($data['variety']) 
         }
     } else {
         // Si le produit n'existe pas dans le panier, on l'ajoute
-        $insertSql = "INSERT INTO panier (nom_panier, prix_panier, variete_panier, quantite_panier, statut_panier, id_client) 
+        $insertSql = "INSERT INTO {$config['db_prefix']}panier (nom_panier, prix_panier, variete_panier, quantite_panier, statut_panier, id_client) 
                       VALUES (:product, :price, :variety, :quantity, 'en_cours', :clientId)";
         $insertStmt = $connexion->prepare($insertSql);
         $insertStmt->bindParam(':product', $product);

@@ -1,0 +1,35 @@
+# .htaccess pour Amap'Market
+
+# Empêcher le listing des répertoires
+Options -Indexes
+
+# Rediriger les erreurs 404 vers ta page personnalisée
+ErrorDocument 404 /404.php
+
+# Empêcher l'accès aux fichiers sensibles
+<FilesMatch "\.(sql|log|htaccess|env)$">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Protéger le dossier config
+<Directory "/home/ewenevh/config">
+    Order Allow,Deny
+    Deny from all
+</Directory>
+
+# Empêcher l'accès direct aux fichiers PHP sensibles
+<Files "db_config.php">
+    Order Allow,Deny
+    Deny from all
+</FilesMatch>
+
+# Forcer l'utilisation de HTTPS (si ton hébergement le supporte)
+# RewriteEngine On
+# RewriteCond %{HTTPS} off
+# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Supprimer l'extension .php des URLs (optionnel)
+RewriteEngine On
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]

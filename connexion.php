@@ -1,6 +1,6 @@
 <?php
 session_start();
-$config = require '/home/ewenevh/config/db_config.php';
+$config = require './config/db_config.php';
 
 try {
     $dsn = "mysql:host={$config['db_host']};dbname={$config['db_name']};charset=utf8mb4";
@@ -34,8 +34,8 @@ $isGestionTesteur = false;
 if (isset($_SESSION['id_client'])) {
     $profilReq = $connexion->prepare("
         SELECT p.type_profil 
-        FROM profil p
-        INNER JOIN client c ON p.login = c.email_client
+        FROM {$config['db_prefix']}profil p
+        INNER JOIN {$config['db_prefix']}client c ON p.login = c.email_client
         WHERE c.id_client = :id
     ");
     $profilReq->execute(['id' => $_SESSION['id_client']]);
@@ -152,7 +152,7 @@ if (isset($_SESSION['inscription_error'])) {
               </li>
               <?php 
                if (isset($_SESSION['id_client'])) {
-                $clientReq = $connexion->prepare("SELECT prenom_client, nom_client FROM client WHERE id_client = :id");
+                $clientReq = $connexion->prepare("SELECT prenom_client, nom_client FROM {$config['db_prefix']}client WHERE id_client = :id");
                 $clientReq->execute(['id' => $_SESSION['id_client']]);
                 $client = $clientReq->fetch();
 
@@ -184,7 +184,7 @@ if (isset($_SESSION['inscription_error'])) {
     <!-----[CONNECTÉ]------->
     <?php 
     if (isset($_SESSION['id_client'])) {
-      $clientReq = $connexion->prepare("SELECT * FROM client WHERE id_client = :id");
+      $clientReq = $connexion->prepare("SELECT * FROM {$config['db_prefix']}client WHERE id_client = :id");
       $clientReq->execute(['id' => $_SESSION['id_client']]);
       $client = $clientReq->fetch();
 
@@ -260,18 +260,18 @@ if (isset($_SESSION['inscription_error'])) {
         $email = $_POST['email'];
         $password = $_POST['password'];
         if ($email != '' && $password != '') {
-          $req = $connexion->prepare("SELECT * FROM profil WHERE login = :email");
+          $req = $connexion->prepare("SELECT * FROM {$config['db_prefix']}profil WHERE login = :email");
           $req->execute(['email' => $email]);
           $rep = $req->fetch();
           if ($rep && password_verify($password, $rep['mot_de_passe'])) {
-            $clientReq = $connexion->prepare("SELECT id_client FROM client WHERE email_client = :email");
+            $clientReq = $connexion->prepare("SELECT id_client FROM {$config['db_prefix']}client WHERE email_client = :email");
             $clientReq->execute(['email' => $email]);
             $client = $clientReq->fetch();
 
             if ($client) {
                 $_SESSION['id_client'] = $client['id_client'];
 
-                $panierReq = $connexion->prepare("SELECT * FROM panier WHERE id_client = :id_client AND statut_panier = 'en_cours'");
+                $panierReq = $connexion->prepare("SELECT * FROM {$config['db_prefix']}panier WHERE id_client = :id_client AND statut_panier = 'en_cours'");
                 $panierReq->execute(['id_client' => $client['id_client']]);
                 $panier = $panierReq->fetchAll();
 
@@ -304,6 +304,18 @@ if (isset($_SESSION['inscription_error'])) {
     <div class="row connexion" id="connexion">
         <div class="col-lg-10 offset-lg-1 col-md-10 offset-md-1 panel panel-white">
             <h1>Connexion</h1>
+            
+            <!-- Message pour les identifiants de test -->
+            <div class="alert alert-info mb-4">
+                <h6 class="alert-heading">📋 Accès testeur Gestion</h6>
+                <p class="mb-2">Pour tester l'interface de gestion en mode démonstration :</p>
+                <ul class="mb-1">
+                    <li><strong>Email :</strong> jean-dupont@gmail.com</li>
+                    <li><strong>Mot de passe :</strong> Jean123</li>
+                </ul>
+                <small class="text-muted">Ce profil testeur permet d'explorer le menu de gestion sans modifier les données réelles.</small>
+            </div>
+
             <form class="connexion" method="POST" action="">
                 <div class="mb-3 row">
                     <label for="email" class="col-sm-2 col-form-label">Adresse mail : </label>
@@ -329,11 +341,10 @@ if (isset($_SESSION['inscription_error'])) {
             <br>
             <div>Si vous n'avez pas de compte : <u style="cursor: pointer;" onclick="toggleForm('inscription')">Inscrivez-vous</u></div>
         </div>
+    </div>
     <?php
     }
     ?>
-        <div class="col-lg-1 col-md-0 panel"></div>
-    </div>
 </div>
 </main>
 

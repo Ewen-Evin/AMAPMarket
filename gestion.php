@@ -1,7 +1,7 @@
 <?php
 session_start(); // Démarrer la session
 
-$config = require '/home/ewenevh/config/db_config.php';
+$config = require './config/db_config.php';
 
 try {
     $dsn = "mysql:host={$config['db_host']};dbname={$config['db_name']};charset=utf8mb4";
@@ -24,8 +24,8 @@ if (!isset($_SESSION['id_client'])) {
   
   $profilReq = $connexion->prepare("
     SELECT p.type_profil 
-    FROM profil p
-    INNER JOIN client c ON p.login = c.email_client
+    FROM {$config['db_prefix']}profil p
+    INNER JOIN {$config['db_prefix']}client c ON p.login = c.email_client
     WHERE c.id_client = :id
   ");
   $profilReq->execute(['id' => $_SESSION['id_client']]);
@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_commande'], $_POST
         // Ne pas enregistrer
     } else {
         $updateReq = $connexion->prepare("
-            UPDATE commande 
+            UPDATE {$config['db_prefix']}commande 
             SET statut = :statut 
             WHERE id_commande = :id_commande
         ");
@@ -107,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_commande'])) {
         </script>";
     } else {
         $deleteReq = $connexion->prepare("
-            DELETE FROM commande 
+            DELETE FROM {$config['db_prefix']}commande 
             WHERE id_commande = :id_commande
         ");
         $deleteReq->execute(['id_commande' => $_POST['delete_commande']]);
@@ -131,7 +131,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_produit'])) {
         </script>";
     } else {
         $deleteProduitReq = $connexion->prepare("
-            DELETE FROM produit 
+            DELETE FROM {$config['db_prefix']}produit 
             WHERE id_produit = :id_produit
         ");
         $deleteProduitReq->execute(['id_produit' => $_POST['delete_produit']]);
@@ -165,7 +165,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_produit'])) {
             move_uploaded_file($_FILES['image_produit']['tmp_name'], $imagePath);
 
             $addProduitReq = $connexion->prepare("
-                INSERT INTO produit (nom_produit, variete_produit, stock_produit, prix_produit) 
+                INSERT INTO {$config['db_prefix']}produit (nom_produit, variete_produit, stock_produit, prix_produit) 
                 VALUES (:nom_produit, :variete_produit, :stock_produit, :prix_produit)
             ");
             $addProduitReq->execute([
@@ -202,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_produit'])) {
 
         $currentProduitReq = $connexion->prepare("
             SELECT nom_produit, variete_produit 
-            FROM produit 
+            FROM {$config['db_prefix']}produit 
             WHERE id_produit = :id_produit
         ");
         $currentProduitReq->execute(['id_produit' => $idProduit]);
@@ -222,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_produit'])) {
             }
 
             $editProduitReq = $connexion->prepare("
-                UPDATE produit 
+                UPDATE {$config['db_prefix']}produit 
                 SET nom_produit = :nom_produit, variete_produit = :variete_produit, stock_produit = :stock_produit, prix_produit = :prix_produit
                 WHERE id_produit = :id_produit
             ");
@@ -293,7 +293,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_produit'])) {
               </li>
               <?php 
                if (isset($_SESSION['id_client'])) {
-                $clientReq = $connexion->prepare("SELECT prenom_client, nom_client FROM client WHERE id_client = :id");
+                $clientReq = $connexion->prepare("SELECT prenom_client, nom_client FROM {$config['db_prefix']}client WHERE id_client = :id");
                 $clientReq->execute(['id' => $_SESSION['id_client']]);
                 $client = $clientReq->fetch();
 
@@ -342,7 +342,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_produit'])) {
                             <?php
                             $produitReq = $connexion->query("
                                 SELECT id_produit, nom_produit, stock_produit, prix_produit, variete_produit
-                                FROM produit
+                                FROM {$config['db_prefix']}produit
                             ");
                             $hasProduit = false;
                             while ($produit = $produitReq->fetch()) {
@@ -418,7 +418,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_produit'])) {
                             <?php
                             $commandeReq = $connexion->query("
                                 SELECT id_commande, date_commande, statut
-                                FROM commande
+                                FROM {$config['db_prefix']}commande
                             ");
                             $hasCommande = false;
                             while ($commande = $commandeReq->fetch()) {

@@ -1,7 +1,7 @@
 <?php
 session_start(); // Démarrer la session
 
-$config = require '/home/ewenevh/config/db_config.php';
+$config = require './config/db_config.php';
 
 try {
     $dsn = "mysql:host={$config['db_host']};dbname={$config['db_name']};charset=utf8mb4";
@@ -56,7 +56,7 @@ try {
               </li>
               <?php 
                if (isset($_SESSION['id_client'])) {
-                $clientReq = $connexion->prepare("SELECT prenom_client, nom_client FROM client WHERE id_client = :id");
+                $clientReq = $connexion->prepare("SELECT prenom_client, nom_client FROM {$config['db_prefix']}client WHERE id_client = :id");
                 $clientReq->execute(['id' => $_SESSION['id_client']]);
                 $client = $clientReq->fetch();
 

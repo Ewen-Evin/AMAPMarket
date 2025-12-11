@@ -1,5 +1,5 @@
 <?php
-$config = require '/home/ewenevh/config/db_config.php';
+$config = require './config/db_config.php';
 
 try {
     $dsn = "mysql:host={$config['db_host']};dbname={$config['db_name']};charset=utf8mb4";
@@ -23,7 +23,7 @@ if(isset($_POST['envoie-inscription'])) {
     $password = htmlspecialchars($_POST['password']);
 
     // Verifier si le mot de passe est valide
-    $checkEmail = $connexion->prepare("SELECT * FROM client WHERE email_client = :email");
+    $checkEmail = $connexion->prepare("SELECT * FROM {$config['db_prefix']}client WHERE email_client = :email");
     $checkEmail->execute(['email' => $email]);
     $existingUser = $checkEmail->fetch();
 
@@ -33,7 +33,7 @@ if(isset($_POST['envoie-inscription'])) {
         header('Location: connexion.php');
         exit;
     } else {
-        $requete = $connexion->prepare("INSERT INTO client VALUES (0, :prenom_client, :nom_client, :email_client, :adresse_client)");
+        $requete = $connexion->prepare("INSERT INTO {$config['db_prefix']}client VALUES (0, :prenom_client, :nom_client, :email_client, :adresse_client)");
         $requete->execute(
             array(
                 'prenom_client' => $prenom,
@@ -42,7 +42,7 @@ if(isset($_POST['envoie-inscription'])) {
                 'adresse_client' => $adresse,
             )
         );
-        $requete = $connexion->prepare("INSERT INTO profil VALUES (:login, :mot_de_passe, 'client')");
+        $requete = $connexion->prepare("INSERT INTO {$config['db_prefix']}profil VALUES (:login, :mot_de_passe, 'client')");
         $requete->execute(
             array(
                 'login' => $email,
@@ -55,5 +55,4 @@ if(isset($_POST['envoie-inscription'])) {
         exit;
     }
 }
-
 ?>

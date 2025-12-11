@@ -1,7 +1,7 @@
 <?php
 session_start(); // Démarrer la session
 
-$config = require '/home/ewenevh/config/db_config.php';
+$config = require './config/db_config.php';
 
 try {
     $dsn = "mysql:host={$config['db_host']};dbname={$config['db_name']};charset=utf8mb4";
@@ -25,7 +25,7 @@ if (!isset($_SESSION['id_client'])) {
 
 // Récupérer tous les produits du panier en base de données avec le statut "en_cours"
 $sql = "SELECT id_panier, nom_panier, prix_panier, variete_panier, quantite_panier 
-        FROM panier 
+        FROM {$config['db_prefix']}panier 
         WHERE id_client = :id_client AND statut_panier = 'en_cours'";
 $stmt = $connexion->prepare($sql);
 $stmt->execute(['id_client' => $_SESSION['id_client']]);
@@ -35,7 +35,7 @@ $produits = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quantities'])) {
     foreach ($_POST['quantities'] as $id_panier => $quantity) {
         $quantity = max(0, floatval($quantity)); // Empêcher les valeurs négatives
-        $updateStmt = $connexion->prepare("UPDATE panier SET quantite_panier = :quantity WHERE id_panier = :id");
+        $updateStmt = $connexion->prepare("UPDATE {$config['db_prefix']}panier SET quantite_panier = :quantity WHERE id_panier = :id");
         $updateStmt->bindParam(':quantity', $quantity);
         $updateStmt->bindParam(':id', $id_panier);
         $updateStmt->execute();
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['quantities'])) {
 // Supprimer un produit du panier si une requête POST est reçue
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     $deleteId = intval($_POST['delete_id']);
-    $deleteStmt = $connexion->prepare("DELETE FROM panier WHERE id_panier = ?");
+    $deleteStmt = $connexion->prepare("DELETE FROM {$config['db_prefix']}panier WHERE id_panier = ?");
     $deleteStmt->execute([$deleteId]);
 }
 
@@ -62,11 +62,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['validate_cart'])) {
         try {
             $connexion->beginTransaction();
 
-            $insertCommande = $connexion->prepare("INSERT INTO commande (date_commande, statut) VALUES (NOW(), 'en cours de traitement')");
+            $insertCommande = $connexion->prepare("INSERT INTO {$config['db_prefix']}commande (date_commande, statut) VALUES (NOW(), 'en cours de traitement')");
             $insertCommande->execute();
 
             foreach ($produits as $produit) {
-                $updateStock = $connexion->prepare("UPDATE produit SET stock_produit = stock_produit - :quantite WHERE nom_produit = :nom AND variete_produit = :variete");
+                $updateStock = $connexion->prepare("UPDATE {$config['db_prefix']}produit SET stock_produit = stock_produit - :quantite WHERE nom_produit = :nom AND variete_produit = :variete");
                 $updateStock->execute([
                     'quantite' => floatval($produit['quantite_panier']), // Ensure the quantity is treated as a numeric value
                     'nom' => $produit['nom_panier'],
@@ -74,7 +74,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['validate_cart'])) {
                 ]);
             }
 
-            $updatePanier = $connexion->prepare("UPDATE panier SET statut_panier = 'commander' WHERE id_client = :id_client AND statut_panier = 'en_cours'");
+            $updatePanier = $connexion->prepare("UPDATE {$config['db_prefix']}panier SET statut_panier = 'commander' WHERE id_client = :id_client AND statut_panier = 'en_cours'");
             $updatePanier->execute(['id_client' => $_SESSION['id_client']]);
 
             $connexion->commit();
@@ -117,7 +117,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['validate_cart'])) {
         <li class="nav-item"><a class="nav-link actif" href="panier.php">Panier</a></li>
         <?php 
         if (isset($_SESSION['id_client'])) {
-            $clientReq = $connexion->prepare("SELECT prenom_client, nom_client FROM client WHERE id_client = :id");
+            $clientReq = $connexion->prepare("SELECT prenom_client, nom_client FROM {$config['db_prefix']}client WHERE id_client = :id");
             $clientReq->execute(['id' => $_SESSION['id_client']]);
             $client = $clientReq->fetch();
 

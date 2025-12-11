@@ -1,7 +1,7 @@
 <?php
 session_start();
 
-$config = require '/home/ewenevh/config/db_config.php';
+$config = require './config/db_config.php';
 
 try {
     $dsn = "mysql:host={$config['db_host']};dbname={$config['db_name']};charset=utf8mb4";
@@ -60,7 +60,7 @@ $connexion->query("SET CHARACTER SET utf8");
               </li>
               <?php 
                if (isset($_SESSION['id_client'])) {
-                $clientReq = $connexion->prepare("SELECT prenom_client, nom_client FROM client WHERE id_client = :id");
+                $clientReq = $connexion->prepare("SELECT prenom_client, nom_client FROM {$config['db_prefix']}client WHERE id_client = :id");
                 $clientReq->execute(['id' => $_SESSION['id_client']]);
                 $client = $clientReq->fetch();
 
@@ -92,7 +92,7 @@ $connexion->query("SET CHARACTER SET utf8");
 <br><br>
 <div class="row">
 <?php
-  $sql = "SELECT * FROM produit WHERE stock_produit > 0 ORDER BY nom_produit"; 
+  $sql = "SELECT * FROM {$config['db_prefix']}produit WHERE stock_produit > 0 ORDER BY nom_produit"; 
   $reponse = $connexion->query($sql);
   if (!$reponse) {
     echo "<p>Erreur lors de la récupération des produits.</p>";
