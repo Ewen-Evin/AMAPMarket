@@ -7,29 +7,32 @@ Options -Indexes
 ErrorDocument 404 /404.php
 
 # Empêcher l'accès aux fichiers sensibles
-<FilesMatch "\.(sql|log|htaccess|env)$">
+<FilesMatch "\.(sql|log|htaccess|env|config\.php|db_config\.php)$">
     Order Allow,Deny
     Deny from all
 </FilesMatch>
 
-# Protéger le dossier config (version corrigée)
-<Directory "/home/ewenevh/config">
-    Order Allow,Deny
-    Deny from all
-</Directory>
-
-# Empêcher l'accès direct aux fichiers PHP sensibles
+# Protéger les fichiers PHP spécifiques
 <Files "db_config.php">
     Order Allow,Deny
     Deny from all
 </Files>
 
-# Forcer l'utilisation de HTTPS (si ton hébergement le supporte)
-# RewriteEngine On
-# RewriteCond %{HTTPS} off
-# RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+# Protéger le dossier config s'il existe dans le répertoire web
+# (si ton dossier config est dans le répertoire accessible)
+<IfModule mod_authz_core.c>
+    <IfModule mod_rewrite.c>
+        RewriteEngine On
+        RewriteRule ^config/ - [F,L]
+    </IfModule>
+</IfModule>
 
-# Supprimer l'extension .php des URLs (optionnel)
+# Supprimer l'extension .php des URLs
 RewriteEngine On
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+# Désactiver les méthodes HTTP dangereuses
+<LimitExcept GET POST>
+    Deny from all
+</LimitExcept>
