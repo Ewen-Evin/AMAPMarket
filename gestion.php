@@ -160,7 +160,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_produit'])) {
         $prixProduit = $_POST['prix_produit'];
 
         if (isset($_FILES['image_produit']) && $_FILES['image_produit']['error'] === UPLOAD_ERR_OK) {
-            $imageName = $nomProduit . $varieteProduit . ".webp";
+            // CORRECTION : Utiliser strtolower pour le nom de l'image
+            $imageName = strtolower($nomProduit) . strtolower($varieteProduit) . ".webp";
             $imagePath = "image/" . $imageName;
             move_uploaded_file($_FILES['image_produit']['tmp_name'], $imagePath);
 
@@ -209,8 +210,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_produit'])) {
         $currentProduit = $currentProduitReq->fetch();
 
         if ($currentProduit) {
-            $oldImageName = $currentProduit['nom_produit'] . $currentProduit['variete_produit'] . ".webp";
-            $newImageName = $nomProduit . $varieteProduit . ".webp";
+            // CORRECTION : Utiliser strtolower pour les noms d'images
+            $oldImageName = strtolower($currentProduit['nom_produit']) . strtolower($currentProduit['variete_produit']) . ".webp";
+            $newImageName = strtolower($nomProduit) . strtolower($varieteProduit) . ".webp";
 
             if ($oldImageName !== $newImageName) {
                 $oldImagePath = "image/" . $oldImageName;
@@ -347,7 +349,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['edit_produit'])) {
                             $hasProduit = false;
                             while ($produit = $produitReq->fetch()) {
                                 $hasProduit = true;
-                                $imagePath = "image/" . htmlspecialchars($produit['nom_produit']) . htmlspecialchars($produit['variete_produit']) . ".webp";
+                                // CORRECTION : Utiliser strtolower pour le chemin de l'image
+                                $imagePath = "image/" . strtolower(htmlspecialchars($produit['nom_produit'])) . 
+                                             strtolower(htmlspecialchars($produit['variete_produit'])) . ".webp";
                                 echo '<tr>
                                         <td><img src="' . $imagePath . '" alt="Produit" style="width: 40px; height: 40px;"></td>
                                         <td>' . htmlspecialchars($produit['id_produit']) . '</td>
