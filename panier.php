@@ -156,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['validate_cart'])) {
           <?php if ($produits):
               foreach ($produits as $produit): ?>
               <tr>
-                <td><img src="image/<?php echo htmlspecialchars($produit['nom_panier'].$produit['variete_panier']); ?>.webp" alt="Produit" class="img-fluid" style="max-width: 60px;"></td>
+                <td><img src="image/<?php echo strtolower(htmlspecialchars($produit['nom_panier'].$produit['variete_panier'])); ?>.webp" alt="Produit" class="img-fluid" style="max-width: 60px;"></td>
                 <td><?php echo htmlspecialchars($produit['nom_panier']); ?></td>
                 <td><?php echo number_format($produit['prix_panier'], 2); ?>€</td>
                 <td>
